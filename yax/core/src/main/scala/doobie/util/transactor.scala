@@ -172,7 +172,7 @@ object transactor  {
      * @group Natural Transformations
      */
     def rawTrans(implicit ev: Monad[M]): ConnectionIO ~> M =
-      λ[ConnectionIO ~> M](f => connect(kernel).flatMap(f.foldMap(interpret).run))
+      λ[ConnectionIO ~> M](f => connect(kernel).flatMap(c => f.foldMap(interpret andThen λ[Kleisli[M, Connection, ?] ~> M](_.run(c)))))
 
     /**
      * Natural transformation that provides a connection and binds through a `ConnectionIO` program
